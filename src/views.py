@@ -1,13 +1,16 @@
+import json
+import os
 from datetime import datetime
+
 import finnhub
 import pandas as pd
-import json
 import requests
-import os
 from dotenv import load_dotenv
 
+from src.utils import (BASE_DIR, filter_by_date, get_date_range, parse_date,
+                       read_transactions_from_excel)
+
 load_dotenv()
-from src.utils import BASE_DIR, parse_date, read_transactions_from_excel, get_date_range, filter_by_date
 
 
 def get_greeting(dt: datetime) -> str:
@@ -28,7 +31,7 @@ def get_cards_info(transactions: list[dict]) -> list[dict]:
     """
     Возвращает информацию по каждой карте: сумму расходов, маску карты, кешбэк
     """
-    cards = { }
+    cards = {}
     for t in transactions:
         card = t["Номер карты"]
         amount = t["Сумма операции"]
@@ -46,20 +49,17 @@ def get_cards_info(transactions: list[dict]) -> list[dict]:
 
         cards[last_digits]["total_spent"] += abs(amount)
 
-
     return [
         {
             "last_digits": digits,
             "total_spent": round(data["total_spent"], 2),
             "cashback": round(data["total_spent"] / 100, 2),
-
-
         }
         for digits, data in cards.items()
     ]
 
 
-def get_top_transactions(transactions: list[dict], limit: int=5) -> list[dict]:
+def get_top_transactions(transactions: list[dict], limit: int = 5) -> list[dict]:
     """Возвращает топ N транзакций по сумме платежа"""
     top = sorted(transactions, key=lambda t: t["Сумма платежа"], reverse=True)[:limit]
 
@@ -72,7 +72,6 @@ def get_top_transactions(transactions: list[dict], limit: int=5) -> list[dict]:
         }
         for t in top
     ]
-
 
 
 def get_currency_rates(currencies: list[str]) -> list[dict]:
@@ -89,12 +88,10 @@ def get_currency_rates(currencies: list[str]) -> list[dict]:
 
         rates = data["rates"]
         return [
-            {"currency": cur, "rate": round(1 / rates[cur], 2)}
-            for cur in currencies
+            {"currency": cur, "rate": round(1 / rates[cur], 2)} for cur in currencies
         ]
     except (requests.RequestException, KeyError, ZeroDivisionError):
         return []
-
 
 
 def get_stock_prices(stocks: list[str]) -> list[dict]:
@@ -111,7 +108,7 @@ def get_stock_prices(stocks: list[str]) -> list[dict]:
         result = []
         for symbol in stocks:
             quote = client.quote(symbol)
-            price = quote["c"]   # c = current price
+            price = quote["c"]  # c = current price
             if price and price > 0:
                 result.append({"stock": symbol, "price": round(price, 2)})
         return result
@@ -171,7 +168,9 @@ def aggregate_expenses(filtered: list[dict]) -> dict:
 
     transfers_list = [
         {"category": cat, "amount": amt}
-        for cat, amt in sorted(transfers_and_cash.items(), key=lambda x: x[1], reverse=True)
+        for cat, amt in sorted(
+            transfers_and_cash.items(), key=lambda x: x[1], reverse=True
+        )
     ]
 
     return {
@@ -219,4 +218,3 @@ def events_page(date_str: str, period: str = "M") -> str:
     }
 
     return json.dumps(result, ensure_ascii=False, indent=2)
-

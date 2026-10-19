@@ -1,19 +1,27 @@
 import functools
 import json
 from datetime import datetime
+
 import pandas as pd
+
 
 def report_to_file(filename: str | None = None):
     """Декоратор-фабрика: принимает имя файла или использует автоимя."""
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            name = filename or f"report_{func.__name__}_{datetime.now():%Y%m%d_%H%M%S}.json"
+            name = (
+                filename
+                or f"report_{func.__name__}_{datetime.now():%Y%m%d_%H%M%S}.json"
+            )
             with open(name, "w", encoding="utf-8") as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
             return result
+
         return wrapper
+
     return decorator
 
 
@@ -49,4 +57,3 @@ def spending_by_category(
     ]
 
     return result
-

@@ -1,11 +1,13 @@
 import json
+
 from src.utils import BASE_DIR, read_transactions_from_excel
 
 
 def filter_by_month(transactions: list[dict], year: int, month: int) -> list[dict]:
     """Оставляет транзакции за указанный месяц и год."""
     return [
-        t for t in transactions
+        t
+        for t in transactions
         if t["Дата операции"].year == year and t["Дата операции"].month == month
     ]
 
@@ -19,7 +21,9 @@ def cashback_categories(data: list[dict], year: int, month: int) -> str:
         if t["Сумма операции"] < 0:
             category = t["Категория"]
             amount = abs(t["Сумма операции"])
-            expenses_by_category[category] = expenses_by_category.get(category, 0) + amount
+            expenses_by_category[category] = (
+                expenses_by_category.get(category, 0) + amount
+            )
 
     cashback_by_category = {
         category: round(amount / 100, 2)
@@ -47,15 +51,11 @@ def simple_search(transactions: list[dict], query: str) -> str:
     query_lower = query.lower()
 
     found = [
-        t for t in transactions
-        if query_lower in t["Описание"].lower()
-        or query_lower in t["Категория"].lower()
+        t
+        for t in transactions
+        if query_lower in t["Описание"].lower() or query_lower in t["Категория"].lower()
     ]
 
     serialized = [_serialize_transaction(t) for t in found]
 
     return json.dumps(serialized, ensure_ascii=False, indent=2)
-
-
-
-

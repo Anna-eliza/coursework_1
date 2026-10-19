@@ -1,30 +1,30 @@
-import pytest
-from datetime import datetime
 import json
+from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from src.reports import report_to_file
-from src.views import main_page, aggregate_expenses, aggregate_income, events_page
-from src.views import get_greeting, get_cards_info, get_top_transactions, get_stock_prices
-from unittest.mock import patch, MagicMock
-
-from src.views import get_currency_rates
+from src.views import (aggregate_expenses, aggregate_income, events_page,
+                       get_cards_info, get_currency_rates, get_greeting,
+                       get_stock_prices, get_top_transactions, main_page)
 
 
 @pytest.mark.parametrize(
     "hour, expected",
     [
-        (6, "Доброе утро"),       # нижняя граница
+        (6, "Доброе утро"),  # нижняя граница
         (8, "Доброе утро"),
         (11, "Доброе утро"),
-        (12, "Добрый день"),      # граница
+        (12, "Добрый день"),  # граница
         (15, "Добрый день"),
         (17, "Добрый день"),
-        (18, "Добрый вечер"),     # граница
+        (18, "Добрый вечер"),  # граница
         (22, "Добрый вечер"),
-        (23, "Доброй ночи"),      # граница
+        (23, "Доброй ночи"),  # граница
         (0, "Доброй ночи"),
         (3, "Доброй ночи"),
-        (5, "Доброй ночи"),       # граница
+        (5, "Доброй ночи"),  # граница
     ],
 )
 def test_get_greeting(hour, expected):
@@ -58,12 +58,42 @@ def test_get_cards_info():
 def test_get_top_transactions():
     """Проверяет, что возвращаются 5 транзакций, отсортированных по убыванию."""
     transactions = [
-        {"Дата операции": datetime(2021, 12, 1), "Сумма платежа": 1000, "Категория": "A", "Описание": "a"},
-        {"Дата операции": datetime(2021, 12, 2), "Сумма платежа": 5000, "Категория": "B", "Описание": "b"},
-        {"Дата операции": datetime(2021, 12, 3), "Сумма платежа": 500, "Категория": "C", "Описание": "c"},
-        {"Дата операции": datetime(2021, 12, 4), "Сумма платежа": 3000, "Категория": "D", "Описание": "d"},
-        {"Дата операции": datetime(2021, 12, 5), "Сумма платежа": 2000, "Категория": "E", "Описание": "e"},
-        {"Дата операции": datetime(2021, 12, 6), "Сумма платежа": 100, "Категория": "F", "Описание": "f"},
+        {
+            "Дата операции": datetime(2021, 12, 1),
+            "Сумма платежа": 1000,
+            "Категория": "A",
+            "Описание": "a",
+        },
+        {
+            "Дата операции": datetime(2021, 12, 2),
+            "Сумма платежа": 5000,
+            "Категория": "B",
+            "Описание": "b",
+        },
+        {
+            "Дата операции": datetime(2021, 12, 3),
+            "Сумма платежа": 500,
+            "Категория": "C",
+            "Описание": "c",
+        },
+        {
+            "Дата операции": datetime(2021, 12, 4),
+            "Сумма платежа": 3000,
+            "Категория": "D",
+            "Описание": "d",
+        },
+        {
+            "Дата операции": datetime(2021, 12, 5),
+            "Сумма платежа": 2000,
+            "Категория": "E",
+            "Описание": "e",
+        },
+        {
+            "Дата операции": datetime(2021, 12, 6),
+            "Сумма платежа": 100,
+            "Категория": "F",
+            "Описание": "f",
+        },
     ]
 
     result = get_top_transactions(transactions)
@@ -82,8 +112,8 @@ def test_get_currency_rates(mock_get):
     mock_response.json.return_value = {
         "result": "success",
         "rates": {
-            "USD": 0.0125,   # 1 / 80
-            "EUR": 0.0111,   # ~1 / 90
+            "USD": 0.0125,  # 1 / 80
+            "EUR": 0.0111,  # ~1 / 90
         },
     }
     mock_get.return_value = mock_response
@@ -94,6 +124,7 @@ def test_get_currency_rates(mock_get):
     assert result[0]["currency"] == "USD"
     assert result[0]["rate"] == 80.0
     assert result[1]["currency"] == "EUR"
+
 
 @patch("src.views.finnhub.Client")
 def test_get_stock_prices(mock_client):

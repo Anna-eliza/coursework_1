@@ -4,7 +4,8 @@ import pandas as pd
 
 from src.reports import spending_by_category
 from src.services import cashback_categories, simple_search
-from src.utils import BASE_DIR, filter_by_date, get_date_range, read_transactions_from_excel
+from src.utils import (BASE_DIR, filter_by_date, get_date_range,
+                       read_transactions_from_excel)
 from src.views import events_page, main_page
 
 

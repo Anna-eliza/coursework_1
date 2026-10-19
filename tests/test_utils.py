@@ -2,7 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from src.utils import parse_date, get_date_range, read_transactions_from_excel, BASE_DIR, filter_by_date
+from src.utils import (BASE_DIR, filter_by_date, get_date_range, parse_date,
+                       read_transactions_from_excel)
 
 
 def test_parse_date_ok():
@@ -28,7 +29,7 @@ def test_get_date_range_month():
 def test_get_date_range_week():
     """W: понедельник недели — сама дата."""
     start, end = get_date_range("2021-12-20 14:30:00", "W")
-    assert start == datetime(2021, 12, 20)   # 20.12.2021 — понедельник
+    assert start == datetime(2021, 12, 20)  # 20.12.2021 — понедельник
     assert end == datetime(2021, 12, 20, 14, 30, 0)
 
 
@@ -85,5 +86,3 @@ def test_filter_by_date():
     assert len(result) == 2
     assert result[0]["Сумма операции"] == -200
     assert result[1]["Сумма операции"] == -300
-
-
