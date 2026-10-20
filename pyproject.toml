@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "coursework-1"
+version = "0.1.0"
+description = ""
+authors = ["Анна Елизарова <anna_e1984-26@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.14"
+poetry-core = "^2.5.0"
+black = ">=26.10.1"
+isort = ">=9.0.2"
+flake8 = ">=7.4.1"
+mypy = ">=2.4.0"
+pandas = "^3.0.6"
+openpyxl = "^3.1.5"
+requests = "^2.34.2"
+python-dotenv = "^1.2.4"
+finnhub-python = "^2.4.29"
+pytest = ">=9.1.1"
+pytest-cov = ">=7.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+lint = [
+    "black (>=26.10.1,<27.0.0)",
+    "isort (>=9.0.2,<10.0.0)",
+    "flake8 (>=7.4.1,<8.0.0)",
+    "mypy (>=2.4.0,<3.0.0)"
+]
+dev = [
+    "pytest (>=9.1.1,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)"
+]
